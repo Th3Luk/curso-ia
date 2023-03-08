@@ -1,0 +1,23 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © lucasdahne
+
+//@version=5
+strategy("Treinamento algoritmo regressão", overlay=true)
+
+lenForca = 55
+srcForca = close
+upForca = ta.rma(math.max(ta.change(srcForca), 0), lenForca)
+downForca = ta.rma(-math.min(ta.change(srcForca), 0), lenForca)
+rsiForca = downForca == 0 ? 100 : upForca == 0 ? 0 : 100 - 100 / (1 + upForca / downForca)
+
+rsi1 = ta.rsi(close, 14)
+k = ta.sma(ta.stoch(rsi1, rsi1, rsi1, 14), 3)
+vol = volume >= ta.ema(volume, 14)
+med9 = close >= ta.ema(close, 9)
+med21 = close >= ta.ema(close, 21)
+med200 = close >= ta.ema(close, 200)
+
+if strategy.position_size <= 0
+    strategy.entry("Compra", strategy.long, comment='5e8ea375-d219-4c5c-81d3-a7fa102457a4#9#' + str.tostring(ta.tr(true)) + '#' + str.tostring(k) + '#' + str.tostring(vol) + '#' + str.tostring(med9) + '#' + str.tostring(med21) + '#' + str.tostring(med200))
+else
+    strategy.entry("Compra",strategy.short, comment='5e8ea375-d219-4c5c-81d3-a7fa102457a4#9#' + str.tostring(ta.tr(true)) + '#' + str.tostring(k) + '#' + str.tostring(vol) + '#' + str.tostring(med9) + '#' + str.tostring(med21) + '#' + str.tostring(med200))

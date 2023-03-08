@@ -1,0 +1,58 @@
+// © lucasdahne
+//@version=5
+strategy("Indicador Treinamento Sinais", overlay=true)
+
+//Calculo das BB
+lengthBB = input.int(20, minval = 1)
+mult = input.float(2.0, minval = 0.001, maxval = 50, title = "StdDev")
+//basis = request.security(syminfo.tickerid, "15", ta.sma(close, lengthBB))
+//dev = mult * request.security(syminfo.tickerid, "15", ta.stdev(close, lengthBB))
+//valorFechamento = request.security(syminfo.tickerid, "15", close)
+//valorAbertura = request.security(syminfo.tickerid, "15", open)
+
+basis = ta.sma(close, lengthBB)
+dev = mult * ta.stdev(close, lengthBB)
+valorFechamento = close
+valorAbertura = open
+upper = basis + dev
+lower = basis - dev
+offset = input.int(0, "Offset", minval = -500, maxval = 500)
+plot(basis, "Basis", color =#FF6D00, offset = offset)
+p1 = plot(upper, "Upper", color =#2962FF, offset = offset)
+p2 = plot(lower, "Lower", color =#2962FF, offset = offset)
+fill(p1, p2, title = "Background", color = color.rgb(33, 150, 243, 95))
+
+lenForca = 55
+srcForca = close
+upForca = ta.rma(math.max(ta.change(srcForca), 0), lenForca)
+downForca = ta.rma(-math.min(ta.change(srcForca), 0), lenForca)
+rsiForca = downForca == 0 ? 100 : upForca == 0 ? 0 : 100 - 100 / (1 + upForca / downForca)
+
+rsi1 = ta.rsi(close, 14)
+k = ta.sma(ta.stoch(rsi1, rsi1, rsi1, 14), 3)
+vol = volume >= ta.ema(volume, 14)
+med9 = close >= ta.ema(close, 9)
+med21 = close >= ta.ema(close, 21)
+med200 = close >= ta.ema(close, 200)
+cha = ta.ema(ta.accdist, 3) - ta.ema(ta.accdist, 10) > 0
+
+var calculoSaida = low
+loss = calculoSaida > close and strategy.position_size > 0
+
+//Calcular entrada
+bbEntrada = ((valorFechamento[1] < lower[1]) and(valorFechamento > lower) and valorFechamento > valorAbertura) and strategy.position_size <= 0
+if (bbEntrada)
+    valor_minimo = low
+    for i = 1 to 3
+        if (low[i] < valor_minimo)
+            valor_minimo := low[i]
+    calculoSaida := valor_minimo
+    
+plotshape(bbEntrada ? low : na, location = location.belowbar, style = shape.labelup, color = color.blue, size = size.tiny, text = "EBBE", textcolor = color.white)
+strategy.entry("Compra", strategy.long, when=bbEntrada, comment='5e8ea375-d219-4c5c-81d3-a7fa102457a4#9#' + str.tostring(ta.tr(true)) + '#' + str.tostring(k) + '#' + str.tostring(vol) + '#' + str.tostring(med9) + '#' + str.tostring(med21) + '#' + str.tostring(med200))
+
+//Calcular saida
+bbSaida = (((valorFechamento[1] < upper[1]) and(valorFechamento > upper)) and strategy.position_size > 0)
+plotshape(bbSaida ? low : na, location = location.belowbar, style = shape.labelup, color = color.red, size = size.tiny, text = "SBBE", textcolor = color.white)
+strategy.entry("Compra",strategy.short, when=bbSaida, comment='5e8ea375-d219-4c5c-81d3-a7fa102457a4#9#' + str.tostring(ta.tr(true)) + '#' + str.tostring(k) + '#' + str.tostring(vol) + '#' + str.tostring(med9) + '#' + str.tostring(med21) + '#' + str.tostring(med200))
+strategy.close("Compra", when=loss, comment='5e8ea375-d219-4c5c-81d3-a7fa102457a4#9#' + str.tostring(ta.tr(true)) + '#' + str.tostring(k) + '#' + str.tostring(vol) + '#' + str.tostring(med9) + '#' + str.tostring(med21) + '#' + str.tostring(med200))
