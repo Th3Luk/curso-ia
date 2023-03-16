@@ -4,20 +4,25 @@
 //@version=5
 strategy("Treinamento algoritmo regressão", overlay=true)
 
-lenForca = 55
-srcForca = close
-upForca = ta.rma(math.max(ta.change(srcForca), 0), lenForca)
-downForca = ta.rma(-math.min(ta.change(srcForca), 0), lenForca)
-rsiForca = downForca == 0 ? 100 : upForca == 0 ? 0 : 100 - 100 / (1 + upForca / downForca)
-
-rsi1 = ta.rsi(close, 14)
-k = ta.sma(ta.stoch(rsi1, rsi1, rsi1, 14), 3)
+//RSI
+smoothK = input.int(3, "K", minval=1)
+smoothD = input.int(3, "D", minval=1)
+lengthRSI = input.int(14, "RSI Length", minval=1)
+lengthStoch = input.int(14, "Stochastic Length", minval=1)
+src = input(close, title="RSI Source")
+rsi1 = ta.rsi(src, lengthRSI)
+k = ta.sma(ta.stoch(rsi1, rsi1, rsi1, lengthStoch), smoothK)
+d = ta.sma(k, smoothD)
+//Media do volume
 vol = volume >= ta.ema(volume, 14)
+//Media de 9
 med9 = close >= ta.ema(close, 9)
+//Media de 21
 med21 = close >= ta.ema(close, 21)
+//Media de 200
 med200 = close >= ta.ema(close, 200)
 
-if strategy.position_size <= 0
-    strategy.entry("Compra", strategy.long, comment='5e8ea375-d219-4c5c-81d3-a7fa102457a4#9#' + str.tostring(ta.tr(true)) + '#' + str.tostring(k) + '#' + str.tostring(vol) + '#' + str.tostring(med9) + '#' + str.tostring(med21) + '#' + str.tostring(med200))
+if (strategy.position_size <= 0)
+    strategy.entry("Compra", strategy.long, comment = str.tostring(d) + '#' + str.tostring(vol) + '#' + str.tostring(med9) + '#' + str.tostring(med21) + '#' + str.tostring(med200))
 else
-    strategy.entry("Compra",strategy.short, comment='5e8ea375-d219-4c5c-81d3-a7fa102457a4#9#' + str.tostring(ta.tr(true)) + '#' + str.tostring(k) + '#' + str.tostring(vol) + '#' + str.tostring(med9) + '#' + str.tostring(med21) + '#' + str.tostring(med200))
+    strategy.entry("Venda", strategy.short, comment = str.tostring(d) + '#' + str.tostring(vol) + '#' + str.tostring(med9) + '#' + str.tostring(med21) + '#' + str.tostring(med200))
