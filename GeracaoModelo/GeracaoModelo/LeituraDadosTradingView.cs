@@ -25,7 +25,7 @@ namespace GeracaoModelo
             string[] linhaCSV = await File.ReadAllLinesAsync("C://Treinamento//preco.csv");
 
             StringBuilder novoCSV = new StringBuilder();
-            novoCSV.Append("data,RSI,VOLUME,Med 9,Med 21,med200,Valor\n");
+            novoCSV.Append("data,ATR,RSI,VOLUME,Med 9,Med 21,med200,Valor\n");
 
             foreach (string linha in linhaCSV)
             {
