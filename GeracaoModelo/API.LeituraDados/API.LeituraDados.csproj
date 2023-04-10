@@ -13,4 +13,6 @@
     <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="6.4.0" />
   </ItemGroup>
 
+  <ProjectExtensions><VisualStudio><UserProperties swagger_4v1_4swagger_1json__JsonSchema="https://json.schemastore.org/tsd.json" /></VisualStudio></ProjectExtensions>
+
 </Project>

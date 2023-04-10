@@ -6,6 +6,10 @@ namespace API.LeituraDados.Classes.ObterValor
     public class ParametrosObterValor
     {
         public DateTime data { get; set; }
+        public double RVI { get; set; }
+        public double CCI { get; set; }
+        public double FLUXO { get; set; }
+        public double OPEN { get; set; }
         public double ATR { get; set; }
         public double RSI { get; set; }
         public bool VOLUME { get; set; }

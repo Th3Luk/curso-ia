@@ -21,8 +21,17 @@ med9 = close >= ta.ema(close, 9)
 med21 = close >= ta.ema(close, 21)
 //Media de 200
 med200 = close >= ta.ema(close, 200)
+fluxoCaixa = ta.mfi(hlc3, 14)
+ma = ta.sma(hlc3, 20)
+cci = (src - ma) / (0.015 * ta.dev(src, 20))
+
+len = 14
+stddev = ta.stdev(src, len)
+upper = ta.ema(ta.change(src) <= 0 ? 0 : stddev, len)
+lower = ta.ema(ta.change(src) > 0 ? 0 : stddev, len)
+rvi = upper / (upper + lower) * 100
 
 if (strategy.position_size <= 0)
-    strategy.entry("Compra", strategy.long, comment = str.tostring(d) + '#' + str.tostring(vol) + '#' + str.tostring(med9) + '#' + str.tostring(med21) + '#' + str.tostring(med200))
+    strategy.entry("Compra", strategy.long, comment = str.tostring(rvi) + '#' + str.tostring(cci) + '#' + str.tostring(fluxoCaixa) + '#' + str.tostring(open) + '#' + str.tostring(ta.tr(true)) + '#' + str.tostring(d) + '#' + str.tostring(vol) + '#' + str.tostring(med9) + '#' + str.tostring(med21) + '#' + str.tostring(med200))
 else
-    strategy.entry("Venda", strategy.short, comment = str.tostring(d) + '#' + str.tostring(vol) + '#' + str.tostring(med9) + '#' + str.tostring(med21) + '#' + str.tostring(med200))
+    strategy.entry("Venda", strategy.short, comment = str.tostring(rvi) + '#' + str.tostring(cci) + '#' + str.tostring(fluxoCaixa) + '#' + str.tostring(open) + '#' + str.tostring(ta.tr(true)) + '#' + str.tostring(d) + '#' + str.tostring(vol) + '#' + str.tostring(med9) + '#' + str.tostring(med21) + '#' + str.tostring(med200))
